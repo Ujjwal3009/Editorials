@@ -1,0 +1,63 @@
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: upsc-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-upsc_db}
+      POSTGRES_USER: ${DB_USER:-upsc_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-upsc_secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - upsc_postgres_data:/var/lib/postgresql/data
+      - ./database-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U upsc_admin -d upsc_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend-spring
+      dockerfile: Dockerfile
+    container_name: upsc-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-upsc_db}
+      DB_USER: ${DB_USER:-upsc_admin}
+      DB_PASSWORD: ${DB_PASSWORD:-upsc_secret}
+      # 🛡️ GEMINI AI FEATURE FLAG (OFF BY DEFAULT)
+      GEMINI_ENABLED: ${GEMINI_ENABLED:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  scraper:
+    build:
+      context: ./scraper-python
+      dockerfile: Dockerfile
+    container_name: upsc-scraper
+    environment:
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: upsc-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  upsc_postgres_data:

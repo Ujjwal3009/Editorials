@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE UPSC EDITORIAL DESK | Mains Value-Addition Platform</title>
+    <!-- Google Fonts: Editorial Serif & Clean Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,600;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-newsprint font-normal">
+
+    <!-- Top Masthead Header -->
+    <header class="masthead-container">
+        <div class="masthead-top-bar">
+            <div class="edition-info">
+                <span class="live-indicator">● LIVE MAINS DESK</span>
+                <span id="current-date">Monday, August 31, 2026</span>
+                <span class="edition-tag">6-OUTLET MULTI-SOURCE EDITION</span>
+            </div>
+            <div class="theme-controls">
+                <button class="theme-btn active" data-theme="newsprint" title="Clean Newsprint">📰 Classic</button>
+                <button class="theme-btn" data-theme="sepia" title="Heritage Sepia">📜 Sepia</button>
+                <button class="theme-btn" data-theme="dark" title="Midnight Dark">🌙 Dark</button>
+                <div class="font-controls">
+                    <button id="font-decrease" title="Decrease Font">A-</button>
+                    <button id="font-increase" title="Increase Font">A+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="masthead-brand" id="brand-header" style="cursor: pointer;" title="Back to Home Page Catalog">
+            <h1 class="newspaper-title">THE UPSC MAINS EDITORIAL</h1>
+            <p class="newspaper-subtitle">Daily Editorial Analysis, Policy Summaries & Value Addition across 6 Premier Publications</p>
+        </div>
+
+        <!-- 📅 EDITION DATE CATEGORIZATION BAR -->
+        <div class="date-archive-bar">
+            <div class="date-archive-label">
+                <span>🗓️ SELECT EDITION:</span>
+            </div>
+            <div class="date-tabs-container" id="date-tabs">
+                <!-- Populated dynamically via app.js -->
+            </div>
+        </div>
+
+        <!-- Filter & Navigation Bar -->
+        <div class="masthead-nav-bar">
+            <div class="gs-filter-chips">
+                <button class="gs-chip active" data-gs="ALL">All Papers (<span id="total-articles-count">11</span>)</button>
+                <button class="gs-chip" data-gs="GS-1">GS-1 (Heritage & Geo)</button>
+                <button class="gs-chip" data-gs="GS-2">GS-2 (Polity, IR & PIB)</button>
+                <button class="gs-chip" data-gs="GS-3">GS-3 (Economy, S&T, Climate)</button>
+                <button class="gs-chip" data-gs="GS-4">GS-4 (Ethics)</button>
+            </div>
+            <div class="source-legend">
+                <span class="legend-item"><span class="source-tag hindu">The Hindu</span></span>
+                <span class="legend-item"><span class="source-tag ie">Indian Express</span></span>
+                <span class="legend-item"><span class="source-tag orf">ORF</span></span>
+                <span class="legend-item"><span class="source-tag idsa">MP-IDSA</span></span>
+                <span class="legend-item"><span class="source-tag dte">Down To Earth</span></span>
+                <span class="legend-item"><span class="source-tag pib">PIB Digest</span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- 🏠 VIEW 1: HOME PAGE CONTENT CATALOG LIST (DEFAULT)       -->
+    <!-- ======================================================== -->
+    <main id="catalog-view" class="catalog-container">
+        
+        <!-- Header Banner -->
+        <div class="catalog-header-bar">
+            <div class="catalog-title-group">
+                <h2 class="catalog-heading" id="catalog-heading-date">Today's Curated Edition Catalog</h2>
+                <p class="catalog-subheading">Select any editorial or policy brief below to open in full deep-reading mode with Mains PYQs and interactive annotations.</p>
+            </div>
+            <div class="catalog-stats-badge" id="catalog-stats-badge">
+                <span>11 Articles Available</span>
+            </div>
+        </div>
+
+        <!-- Hero Featured Card Slot -->
+        <section id="hero-featured-card" class="hero-featured-section">
+            <!-- Populated dynamically via JS -->
+        </section>
+
+        <!-- Multi-Source Editorial & Policy Grid -->
+        <section class="catalog-grid-section">
+            <div class="section-divider">
+                <span class="divider-text">ALL EDITORIALS, STRATEGIC BRIEFS & SCHEMES</span>
+            </div>
+            <div id="catalog-cards-grid" class="catalog-cards-grid">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- 📖 VIEW 2: FULL ARTICLE READER MODE (OPENED ON CLICK)     -->
+    <!-- ======================================================== -->
+    <main id="reader-view" class="reader-container" style="display: none;">
+        
+        <!-- Back to Catalog Navigation Bar -->
+        <div class="reader-nav-header">
+            <button id="back-to-catalog-btn" class="back-btn">
+                <span>← Back to Edition Catalog</span>
+            </button>
+            <div class="reader-breadcrumbs">
+                <span id="reader-breadcrumb-source">The Hindu</span> / 
+                <span id="reader-breadcrumb-gs">GS-2</span>
+            </div>
+            <div class="reader-quick-actions">
+                <button id="toggle-reader-dock-btn" class="drawer-toggle-btn">📑 Mains Dock (<span id="pyq-count-badge">3</span> PYQs)</button>
+            </div>
+        </div>
+
+        <div class="reader-content-layout">
+            
+            <!-- Center: Full Article Body -->
+            <article class="reader-main-column">
+                <div class="article-header">
+                    <div class="reader-top-meta">
+                        <span id="reader-source-tag" class="source-tag hindu">The Hindu</span>
+                        <div class="gs-badge-pill gs-2" id="lead-gs-badge">GS-2: International Relations</div>
+                    </div>
+                    <h1 class="lead-headline" id="lead-title">Loading editorial...</h1>
+                    <h2 class="lead-subdeck" id="lead-subtitle"></h2>
+                    <div class="article-byline">
+                        <span class="byline-author" id="lead-author"></span>
+                        <span class="byline-source" id="lead-source"></span>
+                        <span class="byline-date" id="lead-date"></span>
+                    </div>
+                </div>
+
+                <!-- Body Content -->
+                <div class="editorial-body" id="lead-content">
+                    <!-- Paragraphs rendered with in-line interactive hover annotations -->
+                </div>
+
+                <!-- Bottom Navigation -->
+                <div class="reader-bottom-nav">
+                    <button id="prev-article-btn" class="nav-article-btn">← Previous Article</button>
+                    <button id="reader-back-btn-bottom" class="nav-article-btn center-back">Return to Catalog Index</button>
+                    <button id="next-article-btn" class="nav-article-btn">Next Article →</button>
+                </div>
+            </article>
+
+            <!-- Right: Mains Value-Addition Dock -->
+            <aside class="reader-enrichment-dock" id="mains-dock">
+                
+                <!-- Tab Controls -->
+                <div class="dock-tabs">
+                    <button class="dock-tab active" data-tab="pyqs">🎯 Mains PYQs</button>
+                    <button class="dock-tab" data-tab="prelims">💡 Prelims MCQs</button>
+                    <button class="dock-tab" data-tab="answers">✍️ Model Answer</button>
+                    <button class="dock-tab" data-tab="stats">📊 Key Data</button>
+                    <button class="dock-tab" data-tab="notes">📝 Notes</button>
+                </div>
+
+                <div class="dock-content-pane">
+                    
+                    <!-- TAB 1: Linked Mains PYQs -->
+                    <div class="dock-pane active" id="pane-pyqs">
+                        <div class="pane-header">
+                            <span class="pane-title">Directly Linked Mains PYQs (2013-2025)</span>
+                        </div>
+                        <div id="dock-pyq-list" class="pyq-items-container">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    
+                    <!-- TAB: Matching Prelims MCQs -->
+                    <div class="dock-pane" id="pane-prelims">
+                        <div class="pane-header">
+                            <span class="pane-title">Matching Prelims PYQs (1995–2025)</span>
+                        </div>
+                        <div id="dock-prelims-list" class="pyq-items-container">
+                            <!-- Injected dynamically via Hybrid Search -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Mains Answer Framework -->
+                    <div class="dock-pane" id="pane-answers">
+                        <div class="pane-header">
+                            <span class="pane-title">150 / 250-Word Mains Framework</span>
+                        </div>
+                        <div class="answer-framework-box">
+                            <div class="framework-section">
+                                <h4 class="fw-title">🎯 Introduction (Definition / Context):</h4>
+                                <p class="fw-text" id="fw-intro">Highlight the core geopolitical/constitutional issue citing current context.</p>
+                            </div>
+                            <div class="framework-section">
+                                <h4 class="fw-title">⚖️ Arguments in Favor / Key Drivers:</h4>
+                                <ul class="fw-list" id="fw-args">
+                                    <li>Strategic necessity of multi-alignment and domestic capacity building.</li>
+                                    <li>Institutional resilience against asymmetric dependency.</li>
+                                </ul>
+                            </div>
+                            <div class="framework-section">
+                                <h4 class="fw-title">⚠️ Counter-Arguments / Challenges:</h4>
+                                <ul class="fw-list" id="fw-challenges">
+                                    <li>Industrial fragmentation and fiscal bottlenecks.</li>
+                                </ul>
+                            </div>
+                            <div class="framework-section">
+                                <h4 class="fw-title">🚀 Way Forward (Committee / Policy Hook):</h4>
+                                <p class="fw-text" id="fw-wayforward">Harmonize multilateral partnerships with proactive indigenization.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Curated Statistics & Data Points -->
+                    <div class="dock-pane" id="pane-stats">
+                        <div class="pane-header">
+                            <span class="pane-title">Factual Citations & Quotes</span>
+                        </div>
+                        <div id="dock-stats-list" class="stats-items-container">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Personal Aspirant Notes -->
+                    <div class="dock-pane" id="pane-notes">
+                        <div class="pane-header">
+                            <span class="pane-title">Personal Value Addition Notes</span>
+                        </div>
+                        <textarea id="note-input" placeholder="Jot down quotes, committee references, or exam hooks from this editorial..." rows="4"></textarea>
+                        <button id="save-note-btn" class="save-note-action">Save to Revision Vault</button>
+                        <div id="saved-notes-list" class="saved-notes-container"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Floating Definition Popover (for in-line hover engine) -->
+    <div id="concept-popover" class="concept-popover-card" style="display: none;">
+        <div class="popover-header">
+            <span class="popover-tag" id="popover-category">CONCEPT</span>
+            <span class="popover-term" id="popover-term">Term</span>
+        </div>
+        <p class="popover-def" id="popover-def">Definition</p>
+        <div class="popover-upsc-box">
+            <span class="upsc-label">UPSC Mains Context:</span>
+            <p class="popover-context" id="popover-context"></p>
+        </div>
+    </div>
+
+    <!-- Floating Text Selection Toolbar -->
+    <div id="selection-toolbar" class="selection-toolbar-menu" style="display: none;">
+        <button class="toolbar-btn" id="tool-explain" title="Explain Concept">💡 Explain</button>
+        <button class="toolbar-btn" id="tool-highlight" title="Highlight Yellow">🖍️ Highlight</button>
+        <button class="toolbar-btn" id="tool-answer" title="Draft Answer">✍️ 150-Word Answer</button>
+        <button class="toolbar-btn" id="tool-note" title="Add Note">📝 Note</button>
+    </div>
+
+    
+    <!-- 🌟 BIG ROUND ANDROID-GEMINI STYLE AI ACTION BUTTON (FAB) -->
+    <div id="gemini-dossier-fab" class="gemini-round-fab" title="Generate AIR-1 Topper Answer Dossier">
+        <div class="fab-sparkle-icon">✨</div>
+        <span class="fab-hover-text">AIR-1 AI Dossier</span>
+    </div>
+
+    <!-- 📑 SLIDE-IN AI TOPPER DOSSIER MODAL -->
+    <div id="ai-dossier-modal" class="ai-modal-overlay" style="display: none;">
+        <div class="ai-modal-card">
+            <div class="ai-modal-header">
+                <div class="modal-title-group">
+                    <span class="ai-badge-glowing">✨ CHIEF EXAMINER AI</span>
+                    <h3 class="modal-main-title">AIR-1 UPSC Mains Answer & Enrichment Dossier</h3>
+                </div>
+                <div class="modal-action-buttons">
+                    <button id="download-dossier-pdf-btn" class="modal-action-btn pdf-btn" title="Download Printable PDF">📥 Download 1-Page PDF</button>
+                    <button id="close-dossier-modal-btn" class="modal-action-btn close-btn" title="Close">✕</button>
+                </div>
+            </div>
+            <div class="ai-modal-body" id="dossier-result-content">
+                <!-- Injected via AiDossierEngine -->
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- 📊 SLEEK AI TOKEN USAGE & QUOTA ANALYTICS DASHBOARD MODAL -->
+    <div id="token-dashboard-modal" class="ai-modal-overlay" style="display: none;">
+        <div class="ai-modal-card token-dashboard-card">
+            <div class="ai-modal-header">
+                <div class="modal-title-group">
+                    <span class="ai-badge-glowing">📊 REAL-TIME AI ANALYTICS</span>
+                    <h3 class="modal-main-title">Gemini AI Token & Quota Consumption Dashboard</h3>
+                </div>
+                <div class="modal-action-buttons">
+                    <button id="reset-token-log-btn" class="modal-action-btn close-btn" title="Reset History">🗑️ Reset Log</button>
+                    <button id="close-token-modal-btn" class="modal-action-btn" title="Close">✕</button>
+                </div>
+            </div>
+            <div class="ai-modal-body">
+                
+                <!-- Stat Metric Cards -->
+                <div class="token-stats-grid">
+                    <div class="token-stat-card">
+                        <span class="stat-card-label">🔥 Total Tokens Used</span>
+                        <div class="stat-card-val" id="stat-total-tokens">0</div>
+                        <span class="stat-card-sub">Cumulative across summaries</span>
+                    </div>
+                    <div class="token-stat-card">
+                        <span class="stat-card-label">📥 Prompt / Input Tokens</span>
+                        <div class="stat-card-val" id="stat-prompt-tokens">0</div>
+                        <span class="stat-card-sub">Editorial text & syllabus RAG</span>
+                    </div>
+                    <div class="token-stat-card">
+                        <span class="stat-card-label">📤 Output / Generated</span>
+                        <div class="stat-card-val" id="stat-output-tokens">0</div>
+                        <span class="stat-card-sub">AIR-1 Model Answer words</span>
+                    </div>
+                    <div class="token-stat-card highlight">
+                        <span class="stat-card-label">🛡️ pgvector RAG Saved</span>
+                        <div class="stat-card-val text-green" id="stat-saved-tokens">0</div>
+                        <span class="stat-card-sub">Tokens saved via local vector DB</span>
+                    </div>
+                    <div class="token-stat-card">
+                        <span class="stat-card-label">💰 Estimated Cost</span>
+                        <div class="stat-card-val text-blue" id="stat-est-cost">$0.00000</div>
+                        <span class="stat-card-sub">Gemini 1.5 Flash standard tier</span>
+                    </div>
+                </div>
+
+                <!-- Daily Free Quota Bar -->
+                <div class="quota-progress-container">
+                    <div class="quota-header">
+                        <span class="quota-title">⚡ Daily Gemini Quota Consumption</span>
+                        <span class="quota-percent" id="stat-quota-text">0.00% of 1,000,000 Daily Limit</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="stat-quota-bar" style="width: 1%;"></div>
+                    </div>
+                </div>
+
+                <!-- History Table -->
+                <div class="history-table-section">
+                    <h4 class="table-section-title">📜 Per-Summary Token Audit History:</h4>
+                    <div class="table-responsive-box">
+                        <table class="token-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Editorial / Target Topic</th>
+                                    <th style="text-align:right;">Input</th>
+                                    <th style="text-align:right;">Output</th>
+                                    <th style="text-align:right;">Total</th>
+                                    <th>Engine Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody id="token-history-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/hoverEngine.js"></script>
+    <script src="js/mainsDrawer.js"></script>
+    <script src="js/readerEngine.js"></script>
+    <script src="js/aiConfig.js"></script>
+    <script src="js/aiTokenTracker.js"></script>
+    <script src="js/aiDossierEngine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
