@@ -2,7 +2,7 @@
 // Dynamic Backend Base URL
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8080/api/v1'
-    : (window.BACKEND_API_URL || 'https://upsc-editorial-backend.onrender.com/api/v1');
+    : (window.BACKEND_API_URL || 'https://editorials.onrender.com/api/v1');
 
 const Api = {
     async getArticles(date, gsPaper) {

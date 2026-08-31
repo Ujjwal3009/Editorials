@@ -11,7 +11,7 @@ on:
       backend_url:
         description: 'Target Backend API URL'
         required: false
-        default: 'https://upsc-editorial-backend.onrender.com'
+        default: 'https://editorials.onrender.com'
 
 jobs:
   ingest:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Execute Daily Ingestion Worker
         env:
-          BACKEND_URL: ${{ inputs.backend_url || secrets.BACKEND_URL || 'https://upsc-editorial-backend.onrender.com' }}
+          BACKEND_URL: ${{ inputs.backend_url || secrets.BACKEND_URL || 'https://editorials.onrender.com' }}
         run: |
           cd scraper-python
           python cron_worker.py
