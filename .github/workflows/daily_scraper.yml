@@ -2,30 +2,39 @@ name: Daily UPSC Ingestion Worker
 
 on:
   schedule:
-    # Runs at 00:00 UTC (5:30 AM IST) every morning
+    # 🌅 Primary Run: 00:00 UTC (5:30 AM IST) every morning
     - cron: '0 0 * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+    # 📰 Secondary Run: 03:00 UTC (8:30 AM IST) for late morning editorial updates
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      backend_url:
+        description: 'Target Backend API URL'
+        required: false
+        default: 'https://upsc-editorial-backend.onrender.com'
 
 jobs:
   ingest:
+    name: Scrape & Ingest Morning Multi-Source Edition
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Scraper Dependencies
         run: |
           cd scraper-python
           pip install -r requirements.txt
 
-      - name: Run Daily Ingestion Worker
+      - name: Execute Daily Ingestion Worker
         env:
-          BACKEND_URL: ${{ secrets.BACKEND_URL || 'http://localhost:8080' }}
+          BACKEND_URL: ${{ inputs.backend_url || secrets.BACKEND_URL || 'https://upsc-editorial-backend.onrender.com' }}
         run: |
           cd scraper-python
           python cron_worker.py
