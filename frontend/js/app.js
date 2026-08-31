@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await HoverEngine.init();
     ReaderEngine.init();
     MainsDrawer.init();
-    if (typeof AiTokenTracker !== "undefined") AiTokenTracker.init();\n    if (typeof AiDossierEngine !== "undefined") AiDossierEngine.init();
+    if (typeof AiTokenTracker !== "undefined") AiTokenTracker.init();
+    if (typeof AiDossierEngine !== "undefined") AiDossierEngine.init();
 
     // 2. Bind Theme, Header & Navigation Controls
     initControls();
