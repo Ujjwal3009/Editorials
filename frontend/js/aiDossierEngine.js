@@ -55,11 +55,26 @@ const AiDossierEngine = {
             let outputTokens = 480;
             let isLive = false;
 
-            if (AI_CONFIG.GEMINI_API_KEY && AI_CONFIG.GEMINI_API_KEY.trim().length > 10) {
-                const liveData = await this.callLiveGemini(article);
-                resultHtml = liveData.html;
-                inputTokens = liveData.promptTokens || inputTokens;
-                outputTokens = liveData.candidateTokens || outputTokens;
+            const backendAiRes = await Api.generateAiDossier(article.id);
+            if (backendAiRes && backendAiRes.isLive) {
+                resultHtml = `
+                    <div class="topper-dossier-card" id="printable-dossier">
+                        <div class="token-usage-meter-box">
+                            <div class="meter-left">
+                                <span class="meter-title">🌐 LIVE GEMINI 1.5 FLASH (SECURE BACKEND PROXY)</span>
+                                <div class="meter-badges">
+                                    <span class="t-badge input">📥 Prompt: ${backendAiRes.promptTokens.toLocaleString()} Tok</span>
+                                    <span class="t-badge output">📤 Output: ${backendAiRes.candidateTokens.toLocaleString()} Tok</span>
+                                    <span class="t-badge total">🔥 Total: ${backendAiRes.totalTokens.toLocaleString()} Tok</span>
+                                    <span class="t-badge cost">💰 Cost: $${backendAiRes.estimatedCost}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="white-space:pre-line;font-size:14px;line-height:1.7;">${backendAiRes.generatedText}</div>
+                    </div>
+                `;
+                inputTokens = backendAiRes.promptTokens;
+                outputTokens = backendAiRes.candidateTokens;
                 isLive = true;
             } else {
                 resultHtml = this.generateLocalTopperAnswer(article, inputTokens, outputTokens);

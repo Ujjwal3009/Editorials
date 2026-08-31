@@ -43,6 +43,21 @@ const Api = {
         }
     },
 
+    async generateAiDossier(articleId, studentAnswer = '') {
+        try {
+            const res = await fetch(`${API_BASE}/ai/generate-dossier`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ articleId, studentAnswer })
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch (e) {
+            console.warn('Backend AI proxy error, using local fallback:', e);
+            return null;
+        }
+    },
+
     async getGlossary() {
         try {
             const res = await fetch(`${API_BASE}/mains/glossary`);
