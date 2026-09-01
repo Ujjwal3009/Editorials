@@ -1,0 +1,26 @@
+name: Keep Render Server Warm
+
+on:
+  schedule:
+    # ⚡ Runs every 10 minutes during active study hours (01:00 UTC to 17:30 UTC -> 6:30 AM to 11:00 PM IST)
+    - cron: '*/10 1-17 * * *'
+    # 🌙 Light keep-alive every 1 hour during midnight
+    - cron: '0 18-23 * * *'
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  ping-backend:
+    name: Ping Render API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Warmup Heartbeat to Render
+        run: |
+          echo "Pinging https://editorials.onrender.com/api/v1/articles..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -m 35 https://editorials.onrender.com/api/v1/articles || echo "000")
+          echo "Received HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Backend is hot and responsive!"
+          else
+            echo "⚠️ Backend warming up (Status $HTTP_STATUS)"
+          fi
