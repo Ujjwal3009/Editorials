@@ -1,8 +1,8 @@
-// UPSC Mains Editorial Master App Coordinator
+// UPSC Mains Editorial Master App Coordinator with Browser History Stack Support
 const AppState = {
     allArticles: [],
     availableDates: [],
-    selectedDate: '2026-08-31',
+    selectedDate: '2026-09-01',
     filteredArticles: [],
     activeArticle: null,
     activeGsFilter: 'ALL',
@@ -11,6 +11,11 @@ const AppState = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Set initial history state
+    if (!history.state) {
+        history.replaceState({ view: 'catalog' }, '', window.location.pathname);
+    }
+
     // 1. Initialize sub-engines
     await HoverEngine.init();
     ReaderEngine.init();
@@ -21,7 +26,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Bind Theme, Header & Navigation Controls
     initControls();
 
-    // 3. Load All Articles & Populate Date Groups
+    // 3. Bind Browser Back / Forward Buttons (Popstate)
+    window.addEventListener('popstate', (event) => {
+        const state = event.state;
+        if (state && state.view === 'reader' && state.articleId) {
+            const article = AppState.allArticles.find(a => a.id === state.articleId);
+            if (article) {
+                openArticleReader(article, false);
+            } else {
+                showCatalogView(false);
+            }
+        } else {
+            showCatalogView(false);
+        }
+    });
+
+    // 4. Load All Articles & Populate Date Groups
     await loadEditorialDesk();
 });
 
@@ -54,15 +74,23 @@ function initControls() {
 
     // Brand Header Click -> Return to Home Catalog
     document.getElementById('brand-header')?.addEventListener('click', () => {
-        showCatalogView();
+        showCatalogView(true);
     });
 
     // Back to Catalog Buttons
     document.getElementById('back-to-catalog-btn')?.addEventListener('click', () => {
-        showCatalogView();
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            showCatalogView(true);
+        }
     });
     document.getElementById('reader-back-btn-bottom')?.addEventListener('click', () => {
-        showCatalogView();
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            showCatalogView(true);
+        }
     });
 
     // GS Paper Filter Chips
@@ -80,7 +108,7 @@ function initControls() {
         if (!AppState.activeArticle) return;
         const idx = AppState.filteredArticles.findIndex(a => a.id === AppState.activeArticle.id);
         if (idx > 0) {
-            openArticleReader(AppState.filteredArticles[idx - 1]);
+            openArticleReader(AppState.filteredArticles[idx - 1], true);
         }
     });
 
@@ -88,14 +116,13 @@ function initControls() {
         if (!AppState.activeArticle) return;
         const idx = AppState.filteredArticles.findIndex(a => a.id === AppState.activeArticle.id);
         if (idx !== -1 && idx < AppState.filteredArticles.length - 1) {
-            openArticleReader(AppState.filteredArticles[idx + 1]);
+            openArticleReader(AppState.filteredArticles[idx + 1], true);
         }
     });
 }
 
 async function loadEditorialDesk(retryCount = 0) {
     const grid = document.getElementById('catalog-cards-grid');
-    const hero = document.getElementById('hero-featured-card');
 
     if (grid && (!AppState.allArticles || AppState.allArticles.length === 0)) {
         grid.innerHTML = `
@@ -110,26 +137,20 @@ async function loadEditorialDesk(retryCount = 0) {
     }
 
     try {
-        // 1. Fetch all articles from persistent database
         AppState.allArticles = await Api.getArticles();
 
         if ((!AppState.allArticles || AppState.allArticles.length === 0) && retryCount < 3) {
-            console.log(`[+] Retrying backend connection in 3s (Attempt ${retryCount + 1}/3)...`);
             setTimeout(() => loadEditorialDesk(retryCount + 1), 3000);
             return;
         }
 
-        // 2. Extract unique dates sorted descending
         const dateSet = new Set(AppState.allArticles.map(a => a.publishedDate).filter(Boolean));
         AppState.availableDates = Array.from(dateSet).sort().reverse();
         if (AppState.availableDates.length > 0) {
             AppState.selectedDate = AppState.availableDates[0];
         }
 
-        // 3. Render Date Archive Tabs Bar
         renderDateTabs();
-
-        // 4. Render Home Content Catalog List
         applyFiltersAndRenderCatalog();
     } catch (e) {
         console.error('Failed to load editorial desk:', e);
@@ -164,7 +185,7 @@ function renderDateTabs() {
             document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
             AppState.selectedDate = dateStr;
-            showCatalogView();
+            showCatalogView(true);
             applyFiltersAndRenderCatalog();
         });
 
@@ -184,13 +205,12 @@ function renderDateTabs() {
         document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
         allTab.classList.add('active');
         AppState.selectedDate = 'ALL';
-        showCatalogView();
+        showCatalogView(true);
         applyFiltersAndRenderCatalog();
     });
     tabsContainer.appendChild(allTab);
 }
 
-// Helper: Multi-Tier Rolling Date Matcher
 function getArticlesForDate(targetDate) {
     if (targetDate === 'ALL') {
         return [...AppState.allArticles];
@@ -220,7 +240,6 @@ function getArticlesForDate(targetDate) {
             });
     });
 
-    // Fallback: If list is empty, return exact matches
     if (res.length === 0) {
         return AppState.allArticles.filter(a => a.publishedDate === targetDate);
     }
@@ -228,7 +247,6 @@ function getArticlesForDate(targetDate) {
     return res;
 }
 
-// 🏠 RENDER THE CONTENT CATALOG LIST ON HOME PAGE
 function applyFiltersAndRenderCatalog() {
     let filtered = getArticlesForDate(AppState.selectedDate);
 
@@ -238,7 +256,6 @@ function applyFiltersAndRenderCatalog() {
 
     AppState.filteredArticles = filtered;
 
-    // Update Counts & Heading
     const totalCountElem = document.getElementById('total-articles-count');
     if (totalCountElem) totalCountElem.textContent = filtered.length;
 
@@ -261,14 +278,10 @@ function applyFiltersAndRenderCatalog() {
         return;
     }
 
-    // Identify Hero Lead Article (or first article)
     const leadArticle = filtered.find(a => a.layoutSlot === 'LEAD') || filtered[0];
     const otherArticles = filtered.filter(a => a.id !== leadArticle.id);
 
-    // 1. Render Hero Lead Card
     renderHeroCard(leadArticle);
-
-    // 2. Render Multi-Source Cards Grid
     renderCatalogCardsGrid(otherArticles);
 }
 
@@ -313,10 +326,9 @@ function renderHeroCard(article) {
         </div>
     `;
 
-    // Click anywhere on card (except external link) to open reader
     container.querySelector('.hero-card').addEventListener('click', (e) => {
         if (!e.target.closest('.hero-ext-link-btn')) {
-            openArticleReader(article);
+            openArticleReader(article, true);
         }
     });
 }
@@ -366,7 +378,7 @@ function renderCatalogCardsGrid(articles) {
 
         card.addEventListener('click', (e) => {
             if (!e.target.closest('.card-ext-btn')) {
-                openArticleReader(article);
+                openArticleReader(article, true);
             }
         });
 
@@ -386,9 +398,13 @@ function getSourceClass(source) {
     return 'src-other';
 }
 
-function openArticleReader(article) {
+function openArticleReader(article, pushHistory = true) {
     AppState.activeArticle = article;
     AppState.currentView = 'reader';
+
+    if (pushHistory) {
+        history.pushState({ view: 'reader', articleId: article.id }, '', `#article-${article.id}`);
+    }
 
     document.getElementById('catalog-view').style.display = 'none';
     document.getElementById('reader-view').style.display = 'block';
@@ -398,8 +414,13 @@ function openArticleReader(article) {
     MainsDrawer.updateDock(article);
 }
 
-function showCatalogView() {
+function showCatalogView(pushHistory = true) {
     AppState.currentView = 'catalog';
+
+    if (pushHistory && history.state && history.state.view === 'reader') {
+        history.pushState({ view: 'catalog' }, '', window.location.pathname);
+    }
+
     document.getElementById('reader-view').style.display = 'none';
     document.getElementById('catalog-view').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
