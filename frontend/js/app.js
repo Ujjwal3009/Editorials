@@ -239,7 +239,13 @@ function getArticlesForDate(targetDate) {
     });
 
     if (res.length === 0) {
-        return AppState.allArticles.filter(a => a.publishedDate === targetDate);
+        // Resilient fallback: return articles for targetDate or most recent available date
+        const direct = AppState.allArticles.filter(a => a.publishedDate === targetDate);
+        if (direct.length > 0) return direct;
+        if (AppState.availableDates.length > 0) {
+            return AppState.allArticles.filter(a => a.publishedDate === AppState.availableDates[0]);
+        }
+        return AppState.allArticles;
     }
 
     return res;

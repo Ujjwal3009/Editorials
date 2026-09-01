@@ -133,99 +133,133 @@ const FallbackData = {
         { term: "Low-Earth Orbit", category: "Space & Tech", definition: "An altitude between 160 km and 2,000 km, optimal for communication satellite constellations.", upscContext: "GS-3 Space commercialization & Starlink constellations." },
         { term: "Chilling Effect", category: "Polity & Law", definition: "A legal doctrine where laws discourage citizens from exercising constitutional rights out of fear of punishment.", upscContext: "Article 19(1)(a) jurisprudence (Shreya Singhal case)." },
         { term: "Glacial Lake Outburst Flood", category: "Environment", definition: "Catastrophic release of water from a glacial lake dammed by unstable moraines.", upscContext: "GS-3 Disaster Management & NDMA early warning guidelines." },
-        { term: "SAMADHAN Doctrine", category: "Security", definition: "MHA 8-pillar operational framework for Left-Wing Extremism containment.", upscContext: "GS-3 Internal Security & Tribal Welfare integration." },
-        { term: "Track II Dialogue", category: "Diplomacy", definition: "Unofficial diplomacy involving non-governmental experts and retired diplomats.", upscContext: "GS-2 Confidence building and cross-border disaster risk sharing." }
+        { term: "SAMADHAN Doctrine", category: "Security", definition: "MHA 8-pillar operational framework for Left-Wing Extremism containment.", upscContext: "GS-3 Internal Security & Tribal Welfare integration." }
     ],
     articles: [
         {
-            id: 1,
+            id: 101,
             source: "The Hindu",
-            sourceUrl: "https://www.thehindu.com/opinion/op-ed/a-shared-disaster-beyond-borders-and-geopolitics/article71401817.ece",
-            title: "A shared disaster, beyond borders and geopolitics",
-            subtitle: "For Nepal, India and China, the devastating cross-border floods are a stark reminder of nature’s fury, and that cooperation must transcend the boundaries of geopolitics",
-            author: "Bhaskar Koirala",
-            publishedDate: "2026-08-29",
+            sourceUrl: "https://www.thehindu.com/opinion/editorial/step-up-regulation-on-ayush-medical-education/article71411043.ece",
+            title: "Step up regulation: On AYUSH medical education",
+            subtitle: "The Union government and the National Commission for Indian System of Medicine must enforce uniform clinical standards and accreditation across AYUSH institutions.",
+            author: "The Hindu Editorial Desk",
+            publishedDate: "2026-09-01",
             layoutSlot: "LEAD",
             gsPaper: "GS-2",
-            syllabusTopicTitle: "Bilateral, regional and global groupings involving India",
+            syllabusTopicTitle: "Issues relating to development and management of Social Sector/Services relating to Health",
             statistics: [
-                "475 MW generating capacity offline on Nepal's electricity grid",
-                "$175.8 million Gyirong Port international gateway buried under debris",
-                "47.5 tonnes of IAF emergency relief material dispatched"
+                "Over 750 AYUSH medical colleges currently operating across India",
+                "National Commission for Indian System of Medicine (NCISM) Act 2020 regulatory oversight",
+                "Ayush grid integration with Ayushman Bharat Digital Mission (ABDM)"
             ],
-            committeesCited: ["2nd ARC 5th Report", "Sendai Framework for Disaster Risk Reduction"],
             elements: [
-                { id: 1, order: 1, type: "paragraph", content: "On Wednesday, August 26, 2026, at approximately 8.44 a.m. Nepal time, what initially appeared to be a 4.4-magnitude earthquake struck near the Nepal-China border. It triggered the collapse of an enormous glacial slab, resulting in devastating flash floods." },
-                { id: 2, order: 2, type: "paragraph", content: "Entire villages and towns have been swept away. Vital infrastructure such as bridges and hydropower stations has been decimated. A staggering 475 megawatts of generating capacity has been wiped off Nepal's electricity grid." },
-                { id: 3, order: 3, type: "heading", content: "Nature’s fury knows no borders" },
-                { id: 4, order: 4, type: "paragraph", content: "For Nepal, India and China, ordinarily caught up in geopolitical contestations, the catastrophic force of nature is a reminder that physical interconnections inextricably link the three countries. China’s Gyirong Port, upgraded at a cost of $175.8 million, is now buried beneath heavy debris." },
-                { id: 5, order: 5, type: "heading", content: "Flood fallout for India" },
-                { id: 6, order: 6, type: "paragraph", content: "For India, downstream flood threats reached the Gandak, Kosi and Ganga rivers in Bihar, prompting maximum alert at Valmikinagar Barrage. New Delhi activated an extensive Humanitarian Assistance and Disaster Relief (HADR) programme with Indian Air Force dispatching 47.5 tonnes of relief material." }
-            ],
-            relatedPyqs: [
-                { id: 1, gsPaper: "GS-2", year: 2023, questionNumber: 18, marks: 15, questionText: "The geopolitical contestations in South Asia necessitate that India reorients its Neighbourhood First policy into actionable regional connectivity and disaster diplomacy. Critically examine." },
-                { id: 2, gsPaper: "GS-3", year: 2024, questionNumber: 16, marks: 15, questionText: "Dam bursts and glacial lake outburst floods (GLOFs) pose an acute threat to the fragile Himalayan ecosystem. Analyze the institutional preparedness required." }
+                { id: 1, order: 1, type: "paragraph", content: "The rapid expansion of the Indian Systems of Medicine (AYUSH) in the public healthcare matrix necessitates stringent quality benchmarks. While the National Commission for Indian System of Medicine (NCISM) has sought to standardize curricula, regulatory loopholes persist in faculty accreditation and infrastructural compliance." },
+                { id: 2, order: 2, type: "paragraph", content: "A robust integrative healthcare architecture requires evidence-based validation. Integrating AYUSH practitioners into rural health infrastructure must be backed by continuous clinical audits to maintain patient safety and uniform treatment protocols." }
             ]
         },
         {
-            id: 2,
+            id: 102,
             source: "The Hindu",
-            sourceUrl: "https://www.thehindu.com/opinion/editorial/escape-velocity-on-what-indias-space-sector-must-focus-on/article71389175.ece",
-            title: "Escape velocity: On what India’s space sector must focus on",
-            subtitle: "India’s space sector must focus on reliability and regular launches",
-            author: "The Hindu Desk",
-            publishedDate: "2026-08-26",
+            sourceUrl: "https://www.thehindu.com/opinion/editorial/deadly-span-on-vulture-safety-in-india-threat-of-electrocution/article71411071.ece",
+            title: "Deadly span: On vulture safety in India, threat of electrocution",
+            subtitle: "Mitigating high-tension powerline electrocutions is critical for safeguarding recovering vulture populations in India.",
+            author: "The Hindu Editorial Desk",
+            publishedDate: "2026-09-01",
             layoutSlot: "SIDE_1",
             gsPaper: "GS-3",
-            syllabusTopicTitle: "Awareness in the fields of Space & Indigenization of Technology",
+            syllabusTopicTitle: "Conservation, environmental pollution and degradation, wildlife protection",
             statistics: [
-                "Launch cost: $13,302 per kg to Low-Earth Orbit on Indian rockets vs $3,225 in US",
-                "SpaceX captured 75% of global orbital payload in 2025"
+                "99% crash in Gyps vulture populations due to veterinary diclofenac since the 1990s",
+                "Action Plan for Vulture Conservation in India (2020-2025)",
+                "Bird flight diverters mandated by Supreme Court in Great Indian Bustard & Vulture priority areas"
             ],
             elements: [
-                { id: 7, order: 1, type: "paragraph", content: "For much of the 20th century, a rocket tearing a white seam through the sky did for India roughly what football did for Argentina and Brazil. A famished republic gambled on rockets and atomic piles. Today, satellites are the plumbing of the information age." },
-                { id: 8, order: 2, type: "paragraph", content: "A recent analysis in Economics Letters finds that it cost $13,302 to loft a kilogram into low-earth orbit on an Indian rocket in 2025. That is because India launches too rarely. The value of India’s space sector can no longer rely on aura, but on jobs, capital, and heavy-lift launch cadence." }
-            ],
-            relatedPyqs: [
-                { id: 3, gsPaper: "GS-3", year: 2021, questionNumber: 7, marks: 10, questionText: "Discuss the role of the private sector in space exploration with special reference to IN-SPACe." }
+                { id: 3, order: 1, type: "paragraph", content: "India’s vulture populations, slowly recovering from the catastrophic diclofenac-induced crash, face a new existential menace: electrocution from high-voltage transmission networks spanning arid and sanctuary corridors." },
+                { id: 4, order: 2, type: "paragraph", content: "Undergrounding power cables and installing reflective bird flight diverters are imperative. The Ministry of Environment, Forest and Climate Change must ensure energy infrastructure expansion does not jeopardize critically endangered avian apex scavengers." }
             ]
         },
         {
-            id: 3,
+            id: 103,
             source: "The Indian Express",
-            sourceUrl: "https://indianexpress.com/article/opinion/editorials/himalayan-glacier-risks-nepal-floods-10856158/",
-            title: "As glaciers melt, prepare for a Himalayan challenge",
-            subtitle: "Ecological fragility and early warning systems across the Himalayan range",
-            author: "IE Bureau",
-            publishedDate: "2026-08-31",
+            sourceUrl: "https://indianexpress.com/article/opinion/editorials/us-iran-war-hormuz-military-economic-escalation-10857864/",
+            title: "In US vs Iran, all roads lead back to Hormuz",
+            subtitle: "Geopolitical flashpoints in West Asia threaten global maritime transit corridors and India's hydrocarbon security.",
+            author: "IE Editorial Bureau",
+            publishedDate: "2026-09-01",
             layoutSlot: "SIDE_2",
-            gsPaper: "GS-3",
-            syllabusTopicTitle: "Disaster and disaster management; Himalayan Ecology",
-            statistics: ["Over 2,000 potentially dangerous glacial lakes identified across the Hindu Kush Himalaya."],
-            elements: [
-                { id: 9, order: 1, type: "paragraph", content: "The Himalayan mountain system is the ecological mainstay of large parts of the Indian Subcontinent. It is the wellspring of rivers and shapes the monsoon. However, the range has become increasingly fragile." }
+            gsPaper: "GS-2",
+            syllabusTopicTitle: "Effect of policies and politics of developed and developing countries on India's interests",
+            statistics: [
+                "Over 20% of global petroleum liquids transit through the Strait of Hormuz daily",
+                "India imports over 85% of its crude oil requirements, heavily reliant on Persian Gulf shipments",
+                "Operation SANKALP initiated by Indian Navy for maritime security in the Gulf region"
             ],
-            relatedPyqs: [
-                { id: 4, gsPaper: "GS-3", year: 2024, questionNumber: 16, marks: 15, questionText: "Dam bursts and glacial lake outburst floods (GLOFs) pose an acute threat to the fragile Himalayan ecosystem." }
+            elements: [
+                { id: 5, order: 1, type: "paragraph", content: "The Strait of Hormuz remains the world's most critical energy chokepoint. Any escalation between Washington and Tehran that threatens shipping navigation triggers instantaneous supply disruptions and freight insurance spikes." },
+                { id: 6, order: 2, type: "paragraph", content: "For New Delhi, preserving unhindered sea lines of communication in the Persian Gulf is essential for macroeconomic stability. India must leverage its diplomatic equities with both West Asian partners to urge de-escalation." }
             ]
         },
         {
-            id: 4,
+            id: 104,
             source: "The Indian Express",
-            sourceUrl: "https://indianexpress.com/article/opinion/columns/indias-central-asia-strategy-needs-less-romance-more-realism-10849030/",
-            title: "C Raja Mohan writes: India’s Central Asia strategy needs realism",
-            subtitle: "Moving from romantic historical ties to pragmatic trade corridors",
-            author: "C. Raja Mohan",
-            publishedDate: "2026-08-31",
+            sourceUrl: "https://indianexpress.com/article/opinion/columns/nepal-did-not-create-today-climate-crisis-floods-august-26-10858356/",
+            title: "Nepal did not create today’s climate crisis. Why should it pay the price?",
+            subtitle: "Himalayan ecology demands regional transboundary disaster diplomacy and climate finance equity.",
+            author: "IE Strategic Column",
+            publishedDate: "2026-09-01",
             layoutSlot: "OPED_1",
-            gsPaper: "GS-2",
-            syllabusTopicTitle: "Bilateral groupings involving India (Central Asia & INSTC)",
-            statistics: ["INSTC freight transit times reduced by 40% compared to Suez Canal route."],
-            elements: [
-                { id: 10, order: 1, type: "paragraph", content: "When the Soviet Union dissolved in 1991 and five new republics emerged in Central Asia, there was extraordinary enthusiasm in Delhi. Today, Delhi must focus on real transit corridors via Chabahar and INSTC." }
+            gsPaper: "GS-3",
+            syllabusTopicTitle: "Disaster and disaster management; Climate Justice & Himalayan Ecology",
+            statistics: [
+                "Hindu Kush Himalaya holds third largest ice mass on Earth after poles",
+                "Loss and Damage Fund operationalized under UNFCCC COP28",
+                "Over 200 million people directly reliant on Himalayan river basins for water and agriculture"
             ],
-            relatedPyqs: [
-                { id: 5, gsPaper: "GS-2", year: 2023, questionNumber: 18, marks: 15, questionText: "The geopolitical contestations in South Asia necessitate regional connectivity." }
+            elements: [
+                { id: 7, order: 1, type: "paragraph", content: "The devastating August flash floods across Nepal and downstream Indian states highlight the disproportionate vulnerability of the Himalayan mountain ecology. Mountain communities contribute negligibly to global emissions yet bear catastrophic losses from Glacial Lake Outburst Floods." },
+                { id: 8, order: 2, type: "paragraph", content: "Transboundary hydrological data-sharing, joint early warning radar networks, and targeted Loss and Damage climate finance must form the core of South Asian regional resilience." }
+            ]
+        },
+        {
+            id: 105,
+            source: "MP-IDSA Defence Institute",
+            sourceUrl: "https://idsa.in/publisher/issuebrief/diversification-of-the-philippines-strategic-partnerships",
+            title: "Diversification of the Philippines’ Strategic Partnerships",
+            subtitle: "Manila's Indo-Pacific defense realignment and the strategic significance of India's BrahMos supersonic missile export.",
+            author: "MP-IDSA Strategic Brief",
+            publishedDate: "2026-09-01",
+            layoutSlot: "OPED_2",
+            gsPaper: "GS-3",
+            syllabusTopicTitle: "Security challenges and their management in border areas; Defence Indigenization & Exports",
+            statistics: [
+                "$375 million BrahMos shore-based anti-ship missile system contract delivered by India",
+                "Philippines Comprehensive Archipelagic Defense Concept (CADC) implementation",
+                "India-ASEAN Strategic Comprehensive Partnership and maritime security coordination"
+            ],
+            elements: [
+                { id: 9, order: 1, type: "paragraph", content: "The Philippines is actively modernizing its archipelagic defense posture in the South China Sea through diversified security partnerships with India, Japan, and the United States." },
+                { id: 10, order: 2, type: "paragraph", content: "The successful induction of India's BrahMos anti-ship cruise missiles represents a landmark milestone for India's defense manufacturing diplomacy, validating New Delhi as a reliable net security provider in the Indo-Pacific." }
+            ]
+        },
+        {
+            id: 106,
+            source: "Down To Earth",
+            sourceUrl: "https://www.downtoearth.org.in/governance/india-finally-gives-its-wastelands-a-name-and-a-future",
+            title: "India finally gives its ‘wastelands’ a name and a future",
+            subtitle: "Reclassifying open natural ecosystems (grasslands and savannas) from 'wasteland' to ecologically vital carbon sinks.",
+            author: "Down To Earth Governance Desk",
+            publishedDate: "2026-09-01",
+            layoutSlot: "OPED_3",
+            gsPaper: "GS-3",
+            syllabusTopicTitle: "Land reforms, ecosystem restoration & environmental governance",
+            statistics: [
+                "Over 17% of India's geographic area historically classified as colonial 'wastelands'",
+                "Grasslands and scrub forests support over 500 million livestock and pastoral livelihoods",
+                "Bonn Challenge target: Restoring 26 million hectares of degraded land by 2030"
+            ],
+            elements: [
+                { id: 11, order: 1, type: "paragraph", content: "For over a century, colonial-era revenue categorizations labeled biodiverse grasslands, scrublands, and semi-arid savannas as 'wastelands', paving the way for ecological degradation and inappropriate tree-planting drives." },
+                { id: 12, order: 2, type: "paragraph", content: "Recognizing Open Natural Ecosystems (ONEs) as unique biodiversity habitats and pastoral safety nets is crucial for achieving India's land degradation neutrality commitments under UNCCD." }
             ]
         }
     ]
