@@ -1,4 +1,4 @@
-// UPSC Mains Editorial Master App Coordinator with Original Source Links
+// UPSC Mains Editorial Master App Coordinator
 const AppState = {
     allArticles: [],
     availableDates: [],
@@ -28,7 +28,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initControls() {
     // Current date masthead display
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+    const dateElem = document.getElementById('current-date');
+    if (dateElem) {
+        dateElem.textContent = new Date().toLocaleDateString('en-US', dateOptions);
+    }
 
     // Theme Switcher
     document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -90,22 +93,50 @@ function initControls() {
     });
 }
 
-async function loadEditorialDesk() {
-    // 1. Fetch all articles from persistent database
-    AppState.allArticles = await Api.getArticles();
+async function loadEditorialDesk(retryCount = 0) {
+    const grid = document.getElementById('catalog-cards-grid');
+    const hero = document.getElementById('hero-featured-card');
 
-    // 2. Extract unique dates sorted descending
-    const dateSet = new Set(AppState.allArticles.map(a => a.publishedDate).filter(Boolean));
-    AppState.availableDates = Array.from(dateSet).sort().reverse();
-    if (AppState.availableDates.length > 0) {
-        AppState.selectedDate = AppState.availableDates[0];
+    if (grid && (!AppState.allArticles || AppState.allArticles.length === 0)) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 24px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-main);">
+                <div class="gemini-sparkle-spinner" style="margin: 0 auto 16px auto;"></div>
+                <h3 style="font-family: var(--font-headline); font-size: 18px; margin-bottom: 8px;">⚡ Loading Daily UPSC Editorial Desk...</h3>
+                <p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto;">
+                    Connecting to Cloud Server. If the server was sleeping (Render Free Tier cold start), it may take ~20-30s on first load.
+                </p>
+            </div>
+        `;
     }
 
-    // 3. Render Date Archive Tabs Bar
-    renderDateTabs();
+    try {
+        // 1. Fetch all articles from persistent database
+        AppState.allArticles = await Api.getArticles();
 
-    // 4. Render Home Content Catalog List
-    applyFiltersAndRenderCatalog();
+        if ((!AppState.allArticles || AppState.allArticles.length === 0) && retryCount < 3) {
+            console.log(`[+] Retrying backend connection in 3s (Attempt ${retryCount + 1}/3)...`);
+            setTimeout(() => loadEditorialDesk(retryCount + 1), 3000);
+            return;
+        }
+
+        // 2. Extract unique dates sorted descending
+        const dateSet = new Set(AppState.allArticles.map(a => a.publishedDate).filter(Boolean));
+        AppState.availableDates = Array.from(dateSet).sort().reverse();
+        if (AppState.availableDates.length > 0) {
+            AppState.selectedDate = AppState.availableDates[0];
+        }
+
+        // 3. Render Date Archive Tabs Bar
+        renderDateTabs();
+
+        // 4. Render Home Content Catalog List
+        applyFiltersAndRenderCatalog();
+    } catch (e) {
+        console.error('Failed to load editorial desk:', e);
+        if (retryCount < 3) {
+            setTimeout(() => loadEditorialDesk(retryCount + 1), 3000);
+        }
+    }
 }
 
 function renderDateTabs() {
@@ -115,7 +146,7 @@ function renderDateTabs() {
     tabsContainer.innerHTML = '';
 
     AppState.availableDates.forEach((dateStr, index) => {
-        const count = AppState.allArticles.filter(a => a.publishedDate === dateStr).length;
+        const count = getArticlesForDate(dateStr).length;
         const dateObj = new Date(dateStr + 'T00:00:00');
         const formatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const dayLabel = index === 0 ? 'Today' : dateObj.toLocaleDateString('en-US', { weekday: 'short' });
@@ -159,11 +190,47 @@ function renderDateTabs() {
     tabsContainer.appendChild(allTab);
 }
 
+// Helper: Multi-Tier Rolling Date Matcher
+function getArticlesForDate(targetDate) {
+    if (targetDate === 'ALL') {
+        return [...AppState.allArticles];
+    }
+
+    const res = [];
+    const seen = new Set();
+
+    // 1. Newspapers (Strictly on selected date)
+    AppState.allArticles
+        .filter(a => (a.source.includes('Hindu') || a.source.includes('Express')))
+        .filter(a => a.publishedDate === targetDate)
+        .forEach(a => {
+            if (!seen.has(a.id)) { seen.add(a.id); res.push(a); }
+        });
+
+    // 2. Think Tanks & Research (Rolling <= targetDate, top 5 per source)
+    const thinkTanks = ['MP-IDSA', 'Observer', 'Down To Earth', 'InsightsIAS', 'PIB'];
+    thinkTanks.forEach(sourceName => {
+        AppState.allArticles
+            .filter(a => a.source.includes(sourceName) || (sourceName === 'PIB' && a.source.includes('Digest')))
+            .filter(a => a.publishedDate <= targetDate)
+            .sort((a, b) => b.publishedDate.localeCompare(a.publishedDate))
+            .slice(0, 5)
+            .forEach(a => {
+                if (!seen.has(a.id)) { seen.add(a.id); res.push(a); }
+            });
+    });
+
+    // Fallback: If list is empty, return exact matches
+    if (res.length === 0) {
+        return AppState.allArticles.filter(a => a.publishedDate === targetDate);
+    }
+
+    return res;
+}
+
 // 🏠 RENDER THE CONTENT CATALOG LIST ON HOME PAGE
 function applyFiltersAndRenderCatalog() {
-    let filtered = AppState.selectedDate === 'ALL'
-        ? [...AppState.allArticles]
-        : AppState.allArticles.filter(a => a.publishedDate === AppState.selectedDate);
+    let filtered = getArticlesForDate(AppState.selectedDate);
 
     if (AppState.activeGsFilter !== 'ALL') {
         filtered = filtered.filter(a => a.gsPaper === AppState.activeGsFilter);
@@ -218,27 +285,39 @@ function renderHeroCard(article) {
     container.innerHTML = `
         <div class="hero-card" data-id="${article.id}">
             <div class="hero-top-badges">
-                <span class="hero-tag-lead">⭐ TODAY'S LEAD OPINION</span>
-                <span class="source-tag ${sourceClass}">${article.source}</span>
-                <span class="gs-badge-pill ${gsClass}">${gsPaper}: ${article.syllabusTopicTitle || 'Core Focus'}</span>
-                ${article.sourceUrl ? `
-                    <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="source-external-pill" onclick="event.stopPropagation()" title="Open original article on ${article.source}">
-                        🔗 Original Link ↗
-                    </a>` : ''}
+                <span class="source-badge ${sourceClass}">★ ${article.source}</span>
+                <span class="gs-badge-pill ${gsClass}">${gsPaper}</span>
+                <span class="read-time-pill">⏱ ${readMinutes} min read</span>
+                <span class="date-pill-tag">📅 ${article.publishedDate}</span>
             </div>
+            
             <h2 class="hero-headline">${article.title}</h2>
-            ${article.subtitle ? `<h3 class="hero-subdeck">${article.subtitle}</h3>` : ''}
             <p class="hero-snippet">${snippet}</p>
-            <div class="hero-byline-bar">
-                <span>By <strong>${article.author || 'Editorial Desk'}</strong> • ${article.publishedDate}</span>
-                <span>⏱️ ${readMinutes} Min Read (${article.elements?.length || 1} Paragraphs)</span>
-                <span class="read-action-link">Read Full Editorial & Annotations ➔</span>
+
+            <div class="hero-footer">
+                <div class="hero-meta">
+                    <span class="hero-author">By ${article.author || 'Editorial Desk'}</span>
+                    ${article.syllabusTopicTitle ? `<span class="hero-topic">• ${article.syllabusTopicTitle}</span>` : ''}
+                </div>
+                <div class="hero-actions">
+                    ${article.sourceUrl ? `
+                        <a href="${article.sourceUrl}" target="_blank" rel="noopener" class="hero-ext-link-btn" title="Open original publication on live website">
+                            🔗 View Original ↗
+                        </a>
+                    ` : ''}
+                    <button class="hero-read-btn" data-id="${article.id}">
+                        Read Deep Analysis ➔
+                    </button>
+                </div>
             </div>
         </div>
     `;
 
-    container.querySelector('.hero-card')?.addEventListener('click', () => {
-        openArticleReader(article);
+    // Click anywhere on card (except external link) to open reader
+    container.querySelector('.hero-card').addEventListener('click', (e) => {
+        if (!e.target.closest('.hero-ext-link-btn')) {
+            openArticleReader(article);
+        }
     });
 }
 
@@ -249,163 +328,79 @@ function renderCatalogCardsGrid(articles) {
     grid.innerHTML = '';
 
     articles.forEach(article => {
+        const gsPaper = article.gsPaper || 'GS-3';
+        const gsClass = gsPaper.toLowerCase().replace('-', '');
+        const sourceClass = getSourceClass(article.source);
+        const readMinutes = Math.max(2, Math.round((article.elements?.length || 4) * 0.5));
+        const snippet = article.subtitle || (article.elements?.[0]?.content || article.fullText || '').substring(0, 140) + '...';
+
         const card = document.createElement('div');
         card.className = 'catalog-card';
         card.dataset.id = article.id;
-
-        const gsPaper = article.gsPaper || 'GS-2';
-        const gsClass = gsPaper.toLowerCase().replace('-', '');
-        const sourceClass = getSourceClass(article.source);
-        const slotLabel = getSlotLabel(article.layoutSlot);
-        const readMinutes = Math.max(2, Math.round((article.elements?.length || 4) * 0.5));
-        
-        const snippet = article.subtitle 
-            ? article.subtitle 
-            : (article.elements?.[0]?.content || article.fullText || '').substring(0, 140) + '...';
-
         card.innerHTML = `
-            <div>
-                <div class="catalog-card-top">
-                    <span class="source-tag ${sourceClass}">${article.source}</span>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span class="catalog-slot-pill">${slotLabel}</span>
-                        ${article.sourceUrl ? `
-                            <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="card-source-link" onclick="event.stopPropagation()" title="Open original link">
-                                🔗 ↗
-                            </a>` : ''}
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span class="gs-badge-pill ${gsClass}" style="font-size: 10px;">${gsPaper}</span><span style="font-size:10px;color:var(--text-muted);font-weight:700;background:rgba(0,0,0,0.04);padding:2px 6px;border-radius:4px;">📅 ${article.publishedDate}</span></div>
-                <h3 class="catalog-card-headline">${article.title}</h3>
-                <p class="catalog-card-snippet">${snippet}</p>
+            <div class="catalog-card-header">
+                <span class="source-badge ${sourceClass}">${article.source}</span>
+                <span class="read-time-pill">⏱ ${readMinutes}m</span>
             </div>
+            
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                <span class="gs-badge-pill ${gsClass}" style="font-size: 10px;">${gsPaper}</span>
+                <span style="font-size:10px;color:var(--text-muted);font-weight:700;background:rgba(0,0,0,0.04);padding:2px 6px;border-radius:4px;">📅 ${article.publishedDate}</span>
+            </div>
+
+            <h3 class="catalog-card-title">${article.title}</h3>
+            <p class="catalog-card-snippet">${snippet}</p>
+
             <div class="catalog-card-footer">
-                <span>By <strong>${article.author || 'Desk'}</strong></span>
-                <span>⏱️ ${readMinutes} Min Read</span>
-                <span style="font-weight: 700; color: var(--primary-color);">Read ➔</span>
+                <span class="catalog-card-author">${article.author || 'Desk'}</span>
+                <div class="card-btn-group">
+                    ${article.sourceUrl ? `
+                        <a href="${article.sourceUrl}" target="_blank" rel="noopener" class="card-ext-btn" title="Open source page">
+                            🔗 ↗
+                        </a>
+                    ` : ''}
+                    <span class="catalog-card-read-link">Read ➔</span>
+                </div>
             </div>
         `;
 
-        // 🎯 FULL CARD CLICK -> OPEN READER VIEW
-        card.addEventListener('click', () => {
-            openArticleReader(article);
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-ext-btn')) {
+                openArticleReader(article);
+            }
         });
 
         grid.appendChild(card);
     });
 }
 
-// 📖 OPEN ARTICLE DEEP READER VIEW
+function getSourceClass(source) {
+    if (!source) return 'src-other';
+    const s = source.toLowerCase();
+    if (s.includes('hindu')) return 'src-hindu';
+    if (s.includes('express')) return 'src-express';
+    if (s.includes('orf') || s.includes('observer')) return 'src-orf';
+    if (s.includes('idsa') || s.includes('defence')) return 'src-idsa';
+    if (s.includes('earth') || s.includes('down')) return 'src-dte';
+    if (s.includes('pib') || s.includes('insights')) return 'src-pib';
+    return 'src-other';
+}
+
 function openArticleReader(article) {
     AppState.activeArticle = article;
     AppState.currentView = 'reader';
 
-    // Toggle Views
     document.getElementById('catalog-view').style.display = 'none';
     document.getElementById('reader-view').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Update Breadcrumbs
-    document.getElementById('reader-breadcrumb-source').textContent = article.source;
-    document.getElementById('reader-breadcrumb-gs').textContent = article.gsPaper || 'GS-2';
-
-    // Source Tag & Original Link Pill
-    const srcTag = document.getElementById('reader-source-tag');
-    srcTag.textContent = article.source;
-    srcTag.className = `source-tag ${getSourceClass(article.source)}`;
-
-    // Top Meta with Clickable Original Link
-    const metaContainer = document.querySelector('.reader-top-meta');
-    if (metaContainer) {
-        metaContainer.innerHTML = `
-            <span id="reader-source-tag" class="source-tag ${getSourceClass(article.source)}">${article.source}</span>
-            <div class="gs-badge-pill ${article.gsPaper ? article.gsPaper.toLowerCase().replace('-', '') : 'gs2'}" id="lead-gs-badge">
-                ${article.gsPaper || 'GS-2'}: ${article.syllabusTopicTitle || 'National & Global Affairs'}
-            </div>
-            ${article.sourceUrl ? `
-                <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="source-external-pill" title="Open original article on ${article.source}">
-                    🔗 View Original on ${article.source} ↗
-                </a>` : ''}
-        `;
-    }
-
-    // Title & Byline
-    document.getElementById('lead-title').textContent = article.title;
-    document.getElementById('lead-subtitle').textContent = article.subtitle || '';
-    document.getElementById('lead-author').innerHTML = `By <strong>${article.author || 'Editorial Desk'}</strong>`;
-    
-    // Byline Source with Link
-    const sourceByline = document.getElementById('lead-source');
-    if (article.sourceUrl) {
-        sourceByline.innerHTML = `Source: <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--primary-color);text-decoration:underline;"><em>${article.source}</em> ↗</a>`;
-    } else {
-        sourceByline.innerHTML = `Source: <em>${article.source}</em>`;
-    }
-
-    document.getElementById('lead-date').textContent = article.publishedDate || '';
-
-    // Render Body Paragraphs
-    const bodyContainer = document.getElementById('lead-content');
-    bodyContainer.innerHTML = '';
-
-    if (article.elements && article.elements.length > 0) {
-        article.elements.forEach((elem, index) => {
-            if (elem.type === 'heading') {
-                const h3 = document.createElement('h3');
-                h3.style.fontFamily = 'var(--font-headline)';
-                h3.style.fontSize = '20px';
-                h3.style.margin = '22px 0 8px';
-                h3.textContent = elem.content;
-                bodyContainer.appendChild(h3);
-            } else {
-                const p = document.createElement('p');
-                if (index === 0) p.className = 'dropcap';
-                p.innerHTML = HoverEngine.annotateParagraphHtml(elem.content);
-                bodyContainer.appendChild(p);
-            }
-        });
-    } else {
-        bodyContainer.innerHTML = `<p class="dropcap">${HoverEngine.annotateParagraphHtml(article.fullText || 'Article content loading...')}</p>`;
-    }
-
-    // Attach Hover Popovers
-    HoverEngine.bindHoverEvents(bodyContainer);
-
-    // Sync Right Mains Enrichment Dock
+    ReaderEngine.renderArticle(article);
     MainsDrawer.updateDock(article);
 }
 
-// 🏠 SHOW HOME CONTENT CATALOG LIST VIEW
 function showCatalogView() {
     AppState.currentView = 'catalog';
     document.getElementById('reader-view').style.display = 'none';
     document.getElementById('catalog-view').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function getSourceClass(source) {
-    if (!source) return 'hindu';
-    if (source.includes('Express')) return 'ie';
-    if (source.includes('Observer') || source.includes('ORF')) return 'orf';
-    if (source.includes('IDSA') || source.includes('Defence')) return 'idsa';
-    if (source.includes('Down To Earth')) return 'dte';
-    if (source.includes('Insights') || source.includes('PIB')) return 'pib';
-    return 'hindu';
-}
-
-function getSlotLabel(slot) {
-    switch (slot) {
-        case 'LEAD': return '⭐ LEAD OPINION';
-        case 'SIDE_1': return 'FIRST EDITORIAL';
-        case 'SIDE_2': return 'SECOND EDITORIAL';
-        case 'OPED_1': return 'STRATEGIC COLUMN';
-        case 'OPED_2': return 'ORF COMMENTARY';
-        case 'OPED_3': return 'ORF GLOBAL SOUTH';
-        case 'OPED_4': return 'MP-IDSA SECURITY';
-        case 'OPED_5': return 'MP-IDSA DEFENCE TECH';
-        case 'OPED_6': return 'CLIMATE & POLICY / DTE';
-        case 'OPED_7': return 'ECOLOGY & AGRI / DTE';
-        case 'PIB_DIGEST': return '🏛️ DAILY PIB & SCHEMES';
-        default: return 'ANALYSIS';
-    }
 }
