@@ -128,10 +128,8 @@ async function loadEditorialDesk(retryCount = 0) {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 48px 24px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-main);">
                 <div class="gemini-sparkle-spinner" style="margin: 0 auto 16px auto;"></div>
-                <h3 style="font-family: var(--font-headline); font-size: 18px; margin-bottom: 8px;">⚡ Loading Daily UPSC Editorial Desk...</h3>
-                <p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto;">
-                    Connecting to Cloud Server. If the server was sleeping (Render Free Tier cold start), it may take ~20-30s on first load.
-                </p>
+                <h3 style="font-family: var(--font-headline); font-size: 18px; margin-bottom: 4px; color: var(--text-main);">Loading Editorials...</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Please wait a moment while the edition is loaded.</p>
             </div>
         `;
     }
