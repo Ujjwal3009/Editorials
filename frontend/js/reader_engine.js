@@ -1,85 +1,133 @@
-// Reader Engine: Text Selection & Floating Action Bar
+// Reader Engine for Article Body rendering, text selection, highlights, and annotations
 const ReaderEngine = {
-    selectedText: '',
-
     init() {
         const toolbar = document.getElementById('selection-toolbar');
-        const modal = document.getElementById('ai-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const backdrop = document.querySelector('.ai-modal-backdrop');
+        if (!toolbar) return;
 
-        document.addEventListener('selectionchange', () => {
+        document.addEventListener('mouseup', () => {
             const selection = window.getSelection();
-            const text = selection.toString().trim();
+            const text = selection ? selection.toString().trim() : '';
 
-            if (text.length > 3) {
-                this.selectedText = text;
+            if (text.length > 5 && AppState.currentView === 'reader') {
                 const range = selection.getRangeAt(0);
                 const rect = range.getBoundingClientRect();
 
-                toolbar.style.top = `${rect.top + window.scrollY - 42}px`;
-                toolbar.style.left = `${Math.max(10, rect.left + window.scrollX + (rect.width / 2) - 140)}px`;
-                toolbar.classList.remove('hidden');
+                toolbar.style.left = `${window.scrollX + rect.left + rect.width / 2 - 100}px`;
+                toolbar.style.top = `${window.scrollY + rect.top - 42}px`;
+                toolbar.style.display = 'flex';
+                this.selectedText = text;
             } else {
-                if (!toolbar.matches(':hover')) {
-                    toolbar.classList.add('hidden');
-                }
+                toolbar.style.display = 'none';
             }
         });
 
-        // Toolbar Buttons
-        toolbar.querySelectorAll('.sel-tool-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const action = btn.dataset.action;
-                toolbar.classList.add('hidden');
-                await this.handleAction(action);
-            });
+        // Toolbar actions
+        document.getElementById('tool-highlight')?.addEventListener('click', () => {
+            document.execCommand('hiliteColor', false, '#ffeaa7');
+            toolbar.style.display = 'none';
         });
 
-        // Modal close
-        closeModalBtn?.addEventListener('click', () => modal.classList.add('hidden'));
-        backdrop?.addEventListener('click', () => modal.classList.add('hidden'));
+        document.getElementById('tool-note')?.addEventListener('click', () => {
+            if (this.selectedText) {
+                if (typeof MainsDrawer !== 'undefined' && MainsDrawer.addNote) {
+                    MainsDrawer.addNote(`"${this.selectedText.substring(0, 80)}..."`);
+                }
+                toolbar.style.display = 'none';
+            }
+        });
     },
 
-    async handleAction(action) {
-        const activeArticle = AppState.activeArticle;
-        const modal = document.getElementById('ai-modal');
-        const modalBody = document.getElementById('modal-body-content');
-        const modalHeading = document.getElementById('modal-heading');
+    renderArticle(article) {
+        if (!article) return;
 
-        if (action === 'NOTE') {
-            const noteContent = prompt('Add personal note for this selection:', this.selectedText);
-            if (noteContent) {
-                await Api.saveNote(activeArticle.id, this.selectedText, noteContent, activeArticle.gsPaper);
-                MainsDrawer.refreshNotes();
-                alert('✅ Saved to your Mains Notes!');
-            }
-            return;
+        // 1. Breadcrumbs & Meta
+        const bcSource = document.getElementById('reader-breadcrumb-source');
+        if (bcSource) bcSource.textContent = article.source || 'Editorial Desk';
+
+        const bcGs = document.getElementById('reader-breadcrumb-gs');
+        if (bcGs) bcGs.textContent = article.gsPaper || 'GS-2';
+
+        const sourceTag = document.getElementById('reader-source-tag');
+        if (sourceTag) {
+            sourceTag.textContent = article.source || 'The Hindu';
+            sourceTag.className = `source-tag ${this.getSourceClass(article.source)}`;
         }
 
-        modalHeading.textContent = `${action === 'EXPLAIN' ? 'Concept Explanation' : action === 'PROS_CONS' ? 'Pros vs Cons Analysis' : 'Syllabus & PYQ Linkage'}`;
-        modalBody.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:600;">⚡ Synthesizing Mains Value Addition...</div>`;
-        modal.classList.remove('hidden');
+        const gsBadge = document.getElementById('lead-gs-badge');
+        if (gsBadge) {
+            const gsPaper = article.gsPaper || 'GS-2';
+            gsBadge.textContent = `${gsPaper}: ${article.syllabusTopicTitle || 'National Affairs'}`;
+            gsBadge.className = `gs-badge-pill ${gsPaper.toLowerCase().replace('-', '')}`;
+        }
 
-        const result = await Api.explainSnippet(this.selectedText, activeArticle.title, activeArticle.gsPaper, action);
+        // 2. Headlines & Byline
+        const titleElem = document.getElementById('lead-title');
+        if (titleElem) titleElem.textContent = article.title || '';
 
-        modalBody.innerHTML = `
-            <div style="margin-bottom: 14px; padding: 10px; background: rgba(0,0,0,0.04); border-left: 3px solid var(--accent-red); font-style: italic;">
-                "${this.selectedText}"
-            </div>
-            <p style="margin-bottom: 12px; font-size: 14px;"><strong>Summary:</strong> ${result.explanation}</p>
-            <p style="margin-bottom: 12px; color: var(--accent-blue); font-weight: 600;">🎯 ${result.upscSignificance}</p>
-            <div style="margin-bottom: 12px;">
-                <strong>Key Mains Arguments:</strong>
-                <ul style="padding-left: 20px; margin-top: 6px;">
-                    ${result.keyArguments ? result.keyArguments.map(a => `<li style="margin-bottom: 4px;">${a}</li>`).join('') : ''}
-                </ul>
-            </div>
-            ${result.wayForward ? `<p style="margin-top: 10px; background: #e8f5e9; padding: 8px; border-radius: 4px; color: #1b5e20;"><strong>💡 Way Forward:</strong> ${result.wayForward}</p>` : ''}
-            <div style="margin-top: 16px; font-size: 11px; color: var(--text-muted); border-top: 1px dotted var(--border-color); padding-top: 8px;">
-                ${result.notice || ''}
-            </div>
-        `;
+        const subtitleElem = document.getElementById('lead-subtitle');
+        if (subtitleElem) {
+            subtitleElem.textContent = article.subtitle || '';
+            subtitleElem.style.display = article.subtitle ? 'block' : 'none';
+        }
+
+        const authorElem = document.getElementById('lead-author');
+        if (authorElem) authorElem.textContent = `By ${article.author || 'Editorial Desk'}`;
+
+        const sourceElem = document.getElementById('lead-source');
+        if (sourceElem) sourceElem.textContent = ` • ${article.source}`;
+
+        const dateElem = document.getElementById('lead-date');
+        if (dateElem) dateElem.textContent = ` • 📅 ${article.publishedDate}`;
+
+        // 3. Body Content Elements with Interactive Glossary Annotation
+        const bodyContainer = document.getElementById('lead-content');
+        if (bodyContainer) {
+            bodyContainer.innerHTML = '';
+
+            let elements = article.elements;
+            if (!elements || elements.length === 0) {
+                if (article.fullText) {
+                    elements = article.fullText.split('\n\n').filter(p => p.trim().length > 0).map((text, i) => ({
+                        sequenceOrder: i + 1,
+                        elementType: 'paragraph',
+                        content: text.trim()
+                    }));
+                } else {
+                    elements = [{
+                        sequenceOrder: 1,
+                        elementType: 'paragraph',
+                        content: article.subtitle || article.title
+                    }];
+                }
+            }
+
+            elements.forEach(elem => {
+                const p = document.createElement('p');
+                p.className = 'editorial-paragraph';
+                p.dataset.order = elem.order || elem.sequenceOrder || 1;
+                
+                const content = elem.content || elem.text || '';
+                
+                // Annotate keywords via HoverEngine if available
+                if (typeof HoverEngine !== 'undefined' && HoverEngine.annotateText) {
+                    p.innerHTML = HoverEngine.annotateText(content);
+                } else {
+                    p.textContent = content;
+                }
+                bodyContainer.appendChild(p);
+            });
+        }
+    },
+
+    getSourceClass(source) {
+        if (!source) return 'src-other';
+        const s = source.toLowerCase();
+        if (s.includes('hindu')) return 'src-hindu';
+        if (s.includes('express')) return 'src-express';
+        if (s.includes('orf') || s.includes('observer')) return 'src-orf';
+        if (s.includes('idsa') || s.includes('defence')) return 'src-idsa';
+        if (s.includes('earth') || s.includes('down')) return 'src-dte';
+        if (s.includes('pib') || s.includes('insights')) return 'src-pib';
+        return 'src-other';
     }
 };
