@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numbers to Know for System Design Interviews | Interactive Reference</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/system-design.css">
+</head>
+<body>
+
+    <div class="sd-container">
+        
+        <!-- Header & Navigation -->
+        <header class="sd-header">
+            <div class="sd-top-nav">
+                <a href="/" class="back-badge-link">
+                    <span>← Back to UPSC Mains Editorial Desk</span>
+                </a>
+                <span class="sd-pill-tag">System Design 2026 Edition</span>
+            </div>
+            <h1 class="sd-title">Numbers You Need to Know for System Design</h1>
+            <p class="sd-subtitle">
+                Hardware capabilities evolve rapidly. Quoting outdated 2015 constraints leads to massive over-engineering in modern technical interviews. Here are the realistic hardware numbers, latency benchmarks, capacity limits, and estimation heuristics that actually matter in 2026.
+            </p>
+
+            <!-- Search Box -->
+            <div class="sd-search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="sd-search" class="sd-search-input" placeholder="Search numbers, latencies, QPS, Redis, Kafka, NVMe SSD, or 9s SLA...">
+            </div>
+        </header>
+
+        <!-- 🧮 INTERACTIVE CAPACITY CALCULATOR -->
+        <section class="calc-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 800; color: #fff;">⚡ Interactive Scale & Capacity Estimator</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Tweak the inputs below to calculate real-time QPS, Storage, 80/20 RAM, and Bandwidth</p>
+                </div>
+                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; font-family: var(--font-mono);">
+                    LIVE HEURISTICS
+                </span>
+            </div>
+
+            <div class="calc-grid">
+                <!-- Inputs -->
+                <div class="calc-inputs">
+                    <div class="input-group">
+                        <label>Daily Active Users (DAU in Millions):</label>
+                        <input type="number" id="calc-dau" class="input-field" value="10" step="1" min="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg Reads / User / Day:</label>
+                        <input type="number" id="calc-reads" class="input-field" value="20" step="1" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg Writes / User / Day:</label>
+                        <input type="number" id="calc-writes" class="input-field" value="2" step="0.5" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg Payload Size per Item (KB):</label>
+                        <input type="number" id="calc-size" class="input-field" value="2" step="0.5" min="0.1">
+                    </div>
+                </div>
+
+                <!-- Outputs -->
+                <div class="calc-outputs">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="calc-result-box">
+                            <div class="res-label">Read Throughput</div>
+                            <div class="res-value" id="res-read-qps">2,315 QPS</div>
+                            <div class="res-sub" id="res-peak-read-qps">Peak: ~5,787 QPS</div>
+                        </div>
+                        <div class="calc-result-box">
+                            <div class="res-label">Write Throughput</div>
+                            <div class="res-value" id="res-write-qps" style="color:#f59e0b;">231 QPS</div>
+                            <div class="res-sub" id="res-peak-write-qps">Peak: ~579 QPS</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="calc-result-box">
+                            <div class="res-label">Storage Growth</div>
+                            <div class="res-value" id="res-storage-daily" style="font-size:18px;">38.15 GB / day</div>
+                            <div class="res-sub" id="res-storage-yearly">13.92 TB / yr</div>
+                        </div>
+                        <div class="calc-result-box">
+                            <div class="res-label">80/20 Caching (RAM)</div>
+                            <div class="res-value" id="res-cache-ram" style="font-size:18px; color:#10b981;">76.3 GB RAM</div>
+                            <div class="res-sub" id="res-cache-nodes">~2 Redis Nodes</div>
+                        </div>
+                    </div>
+
+                    <div class="calc-result-box">
+                        <div class="res-label">Network Egress & Recommended App Nodes</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                            <div class="res-value" id="res-bandwidth-egress" style="font-size:18px; color:#38bdf8;">37.04 Mbps</div>
+                            <div style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:#a78bfa;" id="res-recommended-servers">2 App Nodes (Auto-scaled)</div>
+                        </div>
+                        <div class="res-sub" id="res-bandwidth-ingress">Ingress: 3.70 Mbps</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🚀 1. MODERN HARDWARE LIMITS (2026) -->
+        <h2 class="section-heading">🖥️ 1. Modern Hardware Limits (What 1 Server Can Actually Do)</h2>
+        <div class="grid-3">
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">🧠</span>
+                    <h3 class="card-title">Compute & Memory</h3>
+                </div>
+                <div class="card-metric-highlight">Up to 24 TB RAM</div>
+                <p class="card-desc">Standard instances pack massive RAM and vCPUs, rendering single-box architectures viable for millions of users.</p>
+                <ul class="card-bullet-list">
+                    <li><strong>AWS M6i.32xlarge:</strong> 128 vCPUs, 512 GiB RAM (General).</li>
+                    <li><strong>AWS X1e.32xlarge:</strong> 4 TB RAM for in-memory DBs.</li>
+                    <li><strong>AWS U-24tb1.metal:</strong> 24 TB RAM on bare metal.</li>
+                    <li><strong>Rule of thumb:</strong> You rarely need distributed caching for data under 200 GB.</li>
+                </ul>
+            </div>
+
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">💾</span>
+                    <h3 class="card-title">Storage & IOPS</h3>
+                </div>
+                <div class="card-metric-highlight">60 TB NVMe / Node</div>
+                <p class="card-desc">Modern NVMe SSDs have demolished traditional I/O bottlenecks and disk seek penalties.</p>
+                <ul class="card-bullet-list">
+                    <li><strong>AWS i3en.24xlarge:</strong> 60 TB local NVMe SSD.</li>
+                    <li><strong>AWS D3en.12xlarge:</strong> 336 TB HDD for big data.</li>
+                    <li><strong>AWS EBS gp3 / io2:</strong> 16,000 to 256,000 IOPS per volume.</li>
+                    <li><strong>S3 Object Store:</strong> Effectively infinite petabyte scale with 99.999999999% durability.</li>
+                </ul>
+            </div>
+
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">🌐</span>
+                    <h3 class="card-title">Network & Bandwidth</h3>
+                </div>
+                <div class="card-metric-highlight">25 – 100 Gbps</div>
+                <p class="card-desc">Datacenter network backplanes support staggering throughput with predictable latencies.</p>
+                <ul class="card-bullet-list">
+                    <li><strong>Standard Instances:</strong> 25 Gbps baseline network bandwidth.</li>
+                    <li><strong>High-Perf Instances:</strong> 50 to 100+ Gbps dedicated throughput.</li>
+                    <li><strong>Intra-AZ Latency:</strong> Sub-1 millisecond (<0.5ms).</li>
+                    <li><strong>Cross-AZ (Same Region):</strong> 1 – 2 milliseconds.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ⚙️ 2. SYSTEM COMPONENT CAPACITIES -->
+        <h2 class="section-heading">🏗️ 2. Core System Component Capacities</h2>
+        <div class="grid-2">
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">⚡</span>
+                    <h3 class="card-title">Caching Tier (Redis / Memcached)</h3>
+                </div>
+                <ul class="card-bullet-list">
+                    <li><strong>Throughput:</strong> 100,000 – 250,000 QPS on a single modern Redis core with pipelining.</li>
+                    <li><strong>Latency:</strong> 0.1 ms – 0.5 ms for in-memory lookups.</li>
+                    <li><strong>Storage:</strong> 100 GB – 500 GB per single instance; TBs across Redis Cluster.</li>
+                    <li><strong>Interview Rule:</strong> Use for sub-millisecond hot key reads and 80/20 Pareto caching.</li>
+                </ul>
+            </div>
+
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">🗄️</span>
+                    <h3 class="card-title">Databases (SQL & NoSQL)</h3>
+                </div>
+                <ul class="card-bullet-list">
+                    <li><strong>RDBMS (PostgreSQL / MySQL):</strong> 4 TB – 16 TB per node before sharding.</li>
+                    <li><strong>SQL Reads:</strong> 10,000 – 30,000 QPS on tuned primary with read replicas.</li>
+                    <li><strong>SQL Writes:</strong> 1,000 – 5,000 TPS on a single instance (ACID logging).</li>
+                    <li><strong>NoSQL (Cassandra / DynamoDB / ScyllaDB):</strong> 50,000 – 200,000+ writes/sec distributed.</li>
+                </ul>
+            </div>
+
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">🚀</span>
+                    <h3 class="card-title">Application Servers (Go, Java, Node, Rust)</h3>
+                </div>
+                <ul class="card-bullet-list">
+                    <li><strong>Throughput:</strong> 5,000 – 20,000 QPS per instance for I/O bound APIs (Async/Epoll).</li>
+                    <li><strong>CPU Heavy Tasks:</strong> 500 – 2,000 QPS (JWT signing, image rendering, encryption).</li>
+                    <li><strong>Concurrent Connections:</strong> 50,000 – 100,000 open WebSockets/SSE connections per box.</li>
+                </ul>
+            </div>
+
+            <div class="sd-card">
+                <div class="card-icon-title">
+                    <span class="card-icon">📬</span>
+                    <h3 class="card-title">Message Queues & Event Streaming</h3>
+                </div>
+                <ul class="card-bullet-list">
+                    <li><strong>Apache Kafka:</strong> 100,000 – 500,000 msgs/sec per broker (Zero-copy OS page cache).</li>
+                    <li><strong>RabbitMQ:</strong> 10,000 – 40,000 msgs/sec (Complex routing, AMQP).</li>
+                    <li><strong>AWS SQS:</strong> Virtually unlimited throughput with standard queues (3,000 msgs/sec for FIFO).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ⏱️ 3. LATENCY NUMBERS EVERY SYSTEM DESIGNER MUST KNOW -->
+        <h2 class="section-heading">⏱️ 3. Latency Numbers Every Programmer Should Know (Modernized)</h2>
+        <div class="table-responsive">
+            <table class="sd-table">
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Actual Latency</th>
+                        <th>Tier</th>
+                        <th>Human Scale Analogy (0.5ns = 1s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>L1 CPU Cache Reference</strong></td>
+                        <td class="mono-val">0.5 ns</td>
+                        <td><span class="badge-tier tier-ns">Nanoseconds</span></td>
+                        <td>1 heartbeat (1 second)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Branch Mispredict</strong></td>
+                        <td class="mono-val">3 – 5 ns</td>
+                        <td><span class="badge-tier tier-ns">Nanoseconds</span></td>
+                        <td>6 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2 CPU Cache Reference</strong></td>
+                        <td class="mono-val">4 – 7 ns</td>
+                        <td><span class="badge-tier tier-ns">Nanoseconds</span></td>
+                        <td>10 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mutex Lock / Unlock</strong></td>
+                        <td class="mono-val">17 ns</td>
+                        <td><span class="badge-tier tier-ns">Nanoseconds</span></td>
+                        <td>34 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Main Memory Reference (RAM)</strong></td>
+                        <td class="mono-val">100 ns</td>
+                        <td><span class="badge-tier tier-ns">Nanoseconds</span></td>
+                        <td>3.3 minutes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compress 1 KB with Snappy/Zstd</strong></td>
+                        <td class="mono-val">2 – 3 µs</td>
+                        <td><span class="badge-tier tier-us">Microseconds</span></td>
+                        <td>1.5 hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Send 2 KB over 10 Gbps network</strong></td>
+                        <td class="mono-val">2 – 5 µs</td>
+                        <td><span class="badge-tier tier-us">Microseconds</span></td>
+                        <td>2 hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Read 1 MB sequentially from RAM</strong></td>
+                        <td class="mono-val">3 – 5 µs</td>
+                        <td><span class="badge-tier tier-us">Microseconds</span></td>
+                        <td>2.5 hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NVMe SSD Random 4KB Read</strong></td>
+                        <td class="mono-val">10 – 20 µs</td>
+                        <td><span class="badge-tier tier-us">Microseconds</span></td>
+                        <td>8 hours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Read 1 MB sequentially from NVMe SSD</strong></td>
+                        <td class="mono-val">250 µs</td>
+                        <td><span class="badge-tier tier-us">Microseconds</span></td>
+                        <td>5.8 days</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Datacenter Round-Trip (Same AZ)</strong></td>
+                        <td class="mono-val">0.5 ms</td>
+                        <td><span class="badge-tier tier-ms">Milliseconds</span></td>
+                        <td>11.5 days</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cross-AZ Round-Trip (Same Region)</strong></td>
+                        <td class="mono-val">1 – 2 ms</td>
+                        <td><span class="badge-tier tier-ms">Milliseconds</span></td>
+                        <td>1 month</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HDD Seek Time / Random Read</strong></td>
+                        <td class="mono-val">5 – 10 ms</td>
+                        <td><span class="badge-tier tier-ms">Milliseconds</span></td>
+                        <td>3.8 months</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cross-Region Round-Trip (US East to West)</strong></td>
+                        <td class="mono-val">60 – 70 ms</td>
+                        <td><span class="badge-tier tier-ms">Milliseconds</span></td>
+                        <td>4.4 years</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intercontinental RTT (US to India/Asia)</strong></td>
+                        <td class="mono-val">150 – 200 ms</td>
+                        <td><span class="badge-tier tier-ms">Milliseconds</span></td>
+                        <td>12.6 years!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 🔢 4. POWERS OF TWO & QPS MULTIPLIERS -->
+        <h2 class="section-heading">🔢 4. Powers of Two & Daily Throughput Multipliers</h2>
+        <div class="grid-2">
+            <div class="table-responsive">
+                <table class="sd-table">
+                    <thead>
+                        <tr>
+                            <th>Power of 2</th>
+                            <th>Exact Value</th>
+                            <th>Approx Size</th>
+                            <th>Common Analogy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono-val">2^10</td>
+                            <td class="mono-val">1,024</td>
+                            <td>1 KB (~10^3)</td>
+                            <td>1 page of plain text</td>
+                        </tr>
+                        <tr>
+                            <td class="mono-val">2^20</td>
+                            <td class="mono-val">1,048,576</td>
+                            <td>1 MB (~10^6)</td>
+                            <td>1 medium image / book</td>
+                        </tr>
+                        <tr>
+                            <td class="mono-val">2^30</td>
+                            <td class="mono-val">1,073,741,824</td>
+                            <td>1 GB (~10^9)</td>
+                            <td>1 hour HD video</td>
+                        </tr>
+                        <tr>
+                            <td class="mono-val">2^40</td>
+                            <td class="mono-val">1,099,511,627,776</td>
+                            <td>1 TB (~10^12)</td>
+                            <td>1 enterprise database node</td>
+                        </tr>
+                        <tr>
+                            <td class="mono-val">2^50</td>
+                            <td class="mono-val">1.125 x 10^15</td>
+                            <td>1 PB (~10^15)</td>
+                            <td>All photos uploaded to Meta / day</td>
+                        </tr>
+                        <tr>
+                            <td class="mono-val">2^60</td>
+                            <td class="mono-val">1.152 x 10^18</td>
+                            <td>1 EB (~10^18)</td>
+                            <td>Exabyte scale global archive</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-responsive">
+                <table class="sd-table">
+                    <thead>
+                        <tr>
+                            <th>Daily Request Volume</th>
+                            <th>Average QPS</th>
+                            <th>Peak QPS (2.5x - 3x)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>100,000 / day</strong> (100k)</td>
+                            <td class="mono-val">~1.15 QPS</td>
+                            <td class="mono-val">~3.5 QPS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1,000,000 / day</strong> (1M)</td>
+                            <td class="mono-val">~11.5 QPS</td>
+                            <td class="mono-val">~35 QPS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10,000,000 / day</strong> (10M)</td>
+                            <td class="mono-val">~115 QPS</td>
+                            <td class="mono-val">~350 QPS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>100,000,000 / day</strong> (100M)</td>
+                            <td class="mono-val">~1,157 QPS</td>
+                            <td class="mono-val">~3,500 QPS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1 Billion / day</strong> (1B)</td>
+                            <td class="mono-val">~11,574 QPS</td>
+                            <td class="mono-val">~35,000 QPS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 Billion / day</strong> (10B)</td>
+                            <td class="mono-val">~115,740 QPS</td>
+                            <td class="mono-val">~350,000 QPS</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 🛡️ 5. HIGH AVAILABILITY & SLA (THE 9s) -->
+        <h2 class="section-heading">🛡️ 5. High Availability & 9s of SLA Downtime</h2>
+        <div class="table-responsive">
+            <table class="sd-table">
+                <thead>
+                    <tr>
+                        <th>Availability Level</th>
+                        <th>Downtime per Year</th>
+                        <th>Downtime per Month</th>
+                        <th>Downtime per Day</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color:#fb7185;">99% (Two 9s)</strong></td>
+                        <td class="mono-val">3.65 days</td>
+                        <td class="mono-val">7.20 hours</td>
+                        <td class="mono-val">14.40 minutes</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:#fbbf24;">99.9% (Three 9s)</strong></td>
+                        <td class="mono-val">8.76 hours</td>
+                        <td class="mono-val">43.8 minutes</td>
+                        <td class="mono-val">1.44 minutes</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:#38bdf8;">99.99% (Four 9s)</strong></td>
+                        <td class="mono-val">52.6 minutes</td>
+                        <td class="mono-val">4.38 minutes</td>
+                        <td class="mono-val">8.64 seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color:#34d399;">99.999% (Five 9s)</strong></td>
+                        <td class="mono-val">5.26 minutes</td>
+                        <td class="mono-val">26.3 seconds</td>
+                        <td class="mono-val">0.86 seconds</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ⚠️ 6. COMMON INTERVIEW MISTAKES (DEEP DIVE) -->
+        <h2 class="section-heading">⚠️ 6. Top 5 System Design Interview Mistakes</h2>
+        <div class="sd-alert danger">
+            <strong>❌ Mistake 1: Premature Sharding</strong><br>
+            Many candidates propose sharding when a database only has 500 GB or 2 TB of data. A single modern RDS PostgreSQL or MySQL instance can comfortably handle up to <strong>16 TB – 64 TB</strong> with automated read replicas and NVMe SSDs (gp3 / io2). Sharding introduces cross-shard joins, distributed transactions, and rebalancing complexity that is rarely needed at moderate scale.
+        </div>
+
+        <div class="sd-alert danger">
+            <strong>❌ Mistake 2: Overestimating Latency</strong><br>
+            Assuming that database reads take 50–100ms. An indexed B-tree point lookup in memory/buffer cache takes <strong>< 1ms</strong>, and reading from an NVMe SSD takes <strong>< 5ms</strong>. Overestimating latency leads to unnecessary caching layers.
+        </div>
+
+        <div class="sd-alert">
+            <strong>❌ Mistake 3: Over-Engineering for Moderate Write Throughput</strong><br>
+            Introducing Kafka, Cassandra, and microservice pipelines for 500 writes/sec. A single standard PostgreSQL instance easily processes <strong>2,000 to 5,000 ACID writes/sec</strong> with connection pooling.
+        </div>
+
+        <div class="sd-alert">
+            <strong>❌ Mistake 4: Caching Everything Blindly</strong><br>
+            Adding Redis for data with a low read-to-write ratio (< 3:1) or volatile data. Caching adds cache invalidation complexity and race conditions without performance benefits if the cache hit rate is below 80%.
+        </div>
+
+        <div class="sd-alert info">
+            <strong>❌ Mistake 5: Ignoring Network Egress Bandwidth</strong><br>
+            Calculating storage accurately but forgetting that delivering 50,000 simultaneous video streams at 2 Mbps requires <strong>100 Gbps</strong> of sustained outbound bandwidth. Always calculate egress for media-heavy systems!
+        </div>
+
+        <!-- Footer -->
+        <footer class="sd-footer">
+            <p>System Design Reference Guide & Interactive Calculator • Built for high-scale engineering interviews</p>
+            <p style="margin-top: 8px;">
+                <a href="/" style="color: var(--accent-blue); text-decoration: none;">← Return to UPSC Mains Editorial Desk Home</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <script src="js/system-design.js"></script>
+</body>
+</html>

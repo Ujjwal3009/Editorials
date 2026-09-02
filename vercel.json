@@ -3,6 +3,14 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/system-design",
+      "destination": "/frontend/system-design/index.html"
+    },
+    {
+      "source": "/system-design/(.*)",
+      "destination": "/frontend/system-design/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/frontend/$1"
     }
